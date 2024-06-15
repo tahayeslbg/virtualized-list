@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 
 interface Item {
 	id: number;
@@ -18,9 +18,9 @@ const VirtualizedList: React.FC<VirtualizedListProps> = ({
 }) => {
 	const [scrollTop, setScrollTop] = useState(0);
 
-	const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+	const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
 		setScrollTop(e.currentTarget.scrollTop);
-	};
+	}, []);
 
 	const startIndex = Math.floor(scrollTop / itemHeight);
 	const endIndex = Math.min(
@@ -28,7 +28,10 @@ const VirtualizedList: React.FC<VirtualizedListProps> = ({
 		items.length
 	);
 
-	const visibleItems = items.slice(startIndex, endIndex);
+	const visibleItems = useMemo(
+		() => items.slice(startIndex, endIndex),
+		[items, startIndex, endIndex]
+	);
 
 	return (
 		<div
